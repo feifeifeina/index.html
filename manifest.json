@@ -1,0 +1,17 @@
+{
+  "background_color": "#7b4fd4",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Vesya",
+  "orientation": "portrait",
+  "scope": "/",
+  "short_name": "Vesya",
+  "start_url": "https://feifeifeina.github.io/index.html/",
+  "theme_color": "#4fc3c8",
+  "id": "com.vesya.journal",
+  "lang": "fr",
+  "categories": [
+    "health",
+    "medical"
+  ]
+}
