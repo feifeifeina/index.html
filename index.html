@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>💧 Vesya</title>
+<style>
+:root {
+  --bg: #0a1628; --bg2: #0d2137; --card: #0d2137;
+  --border: #1a3a52; --accent: #4fc3f7; --accent2: #0288d1;
+  --text: #e8f4f8; --muted: #78909c; --dim: #546e7a;
+  --green: #4caf50; --red: #ef5350; --orange: #ff9800;
+  --font: 'Segoe UI', system-ui, sans-serif;
+}
+.theme-light {
+  --bg: #f0f4f8; --bg2: #ffffff; --card: #ffffff;
+  --border: #cdd5e0; --text: #1a2744; --muted: #5a6a7a; --dim: #8a9ab0;
+}
+.theme-ocean {
+  --bg: #0a2040; --bg2: #0d3060; --card: #0d3060;
+  --border: #1a5080; --accent: #00e5ff; --text: #e0f7ff;
+}
+.theme-forest {
+  --bg: #0a2010; --bg2: #0d3020; --card: #0d3020;
+  --border: #1a5030; --accent: #69f0ae; --text: #e0ffe8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg); font-family: var(--font);
+  color: var(--text); padding-bottom: 100px; min-height: 100vh;
+  transition: all 0.3s;
+}
+header {
+  background: linear-gradient(180deg, #0d3b5e, #0a2540);
+  padding: 22px 16px 14px; text-align: center;
+  border-bottom: 1px solid #1a4a6e;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.h-sub { font-size: 9px; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; margin-bottom: 3px; }
+header h1 { font-size: 18px; font-weight: 600; color: #e1f5fe; letter-spacing: 1px; }
+.h-meta { display: flex; justify-content: center; gap: 14px; margin-top: 7px; font-size: 11px; color: #78909c; }
+.h-meta strong { color: var(--accent); }
+
+nav { display: flex; background: #0a1e30; border-bottom: 1px solid var(--border); position: sticky; top: 76px; z-index: 199; overflow-x: auto; }
+nav button { flex: 1; min-width: 60px; padding: 10px 4px; border: none; cursor: pointer; background: transparent; color: var(--dim); font-size: 9px; border-bottom: 2px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 2px; white-space: nowrap; }
+nav button .ni { font-size: 16px; }
+nav button.active { background: #0d3b5e; color: var(--accent); border-bottom: 2px solid var(--accent); }
+
+.content { max-width: 540px; margin: 0 auto; padding: 14px 12px; }
+.view { display: none; }
+.view.active { display: block; }
+
+.empty { text-align: center; padding: 50px 20px; color: var(--dim); }
+.empty .ico { font-size: 48px; margin-bottom: 14px; }
+
+.day-group { margin-bottom: 24px; }
+.day-label { font-size: 9px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.day-badge { background: #0d3b5e; border-radius: 10px; padding: 2px 8px; font-size: 10px; color: #81d4fa; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; padding: 12px 14px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.15s; }
+.card:active { transform: scale(0.98); }
+.card-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 14px 0 0 14px; }
+.card-inner { padding-left: 8px; }
+.card-time { font-size: 17px; font-weight: bold; color: var(--accent); }
+.card-manual { font-size: 10px; color: var(--orange); margin-left: 6px; }
+.card-badges { display: flex; flex-wrap: wrap; gap: 5px; margin: 5px 0; }
+.badge { border-radius: 8px; padding: 2px 8px; font-size: 10px; font-weight: 600; }
+.card-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.sym-tags { display: flex; gap: 4px; flex-wrap: wrap; margin: 3px 0; }
+.sym { border-radius: 6px; padding: 2px 7px; font-size: 10px; }
+.s-warn { background: #3a1a1a; color: #ef9a9a; }
+.s-info { background: #1a2a3a; color: #81d4fa; }
+.s-ok { background: #1a3a2a; color: #4caf50; }
+.card-note { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 4px; }
+.btn-del { position: absolute; top: 10px; right: 10px; background: none; border: none; color: #37474f; cursor: pointer; font-size: 18px; }
+
+.sec { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.sec-t { font-size: 9px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; display: block; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 8px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 12px; }
+.chip .cd { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.c-blue { border-color: var(--accent)!important; background: #0d3b5e!important; color: var(--accent)!important; }
+.c-red { border-color: #ef9a9a!important; background: #3a1a1a!important; color: #ef9a9a!important; }
+.c-green { border-color: var(--green)!important; background: #1a3a2a!important; color: var(--green)!important; }
+
+.pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.pain-btn { padding: 10px 8px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 11px; text-align: center; }
+.pain-btn.c-red { border-color: #ef9a9a!important; background: #3a1a1a!important; color: #ef9a9a!important; }
+
+.tog-wrap { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #0d2a3a; }
+.tog-wrap:last-child { border-bottom: none; }
+.tog-label { font-size: 13px; }
+.tog-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.tog { width: 44px; height: 24px; border-radius: 12px; background: #1a3a52; border: none; cursor: pointer; position: relative; flex-shrink: 0; }
+.tog.on { background: var(--accent2); }
+.tog::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: white; transition: left 0.2s; }
+.tog.on::after { left: 22px; }
+
+.time-mode-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+.time-mode-btn { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 11px; text-align: center; }
+.time-mode-btn.active { border-color: var(--accent); background: #0d3b5e; color: var(--accent); }
+
+.time-box { background: linear-gradient(135deg, #0d3b5e, #0a2540); border: 1px solid #1a4a6e; border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; text-align: center; }
+.time-hint { font-size: 10px; color: var(--muted); }
+.time-val { font-size: 24px; color: var(--accent); margin-top: 4px; }
+.time-date { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+.manual-time-box { background: var(--card); border: 1px solid var(--orange); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.manual-title { font-size: 9px; letter-spacing: 2px; color: var(--orange); text-transform: uppercase; margin-bottom: 10px; }
+.manual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.manual-wrap label { font-size: 10px; color: var(--muted); display: block; margin-bottom: 4px; }
+.manual-wrap input { background: #091929; border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px; font-size: 14px; outline: none; width: 100%; text-align: center; }
+.manual-preview { margin-top: 10px; text-align: center; font-size: 12px; color: var(--orange); background: #1a0d00; border-radius: 8px; padding: 8px; }
+
+textarea { width: 100%; min-height: 80px; background: #091929; border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 12px; font-size: 13px; font-family: var(--font); resize: vertical; outline: none; margin-top: 4px; }
+textarea::placeholder { color: #2a4a5a; }
+input[type=text], input[type=number], input[type=date], input[type=time], select {
+  background: #091929; border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); padding: 10px 12px; font-size: 13px; width: 100%; outline: none;
+}
+select option { background: #0d2137; }
+
+.btn-save { width: 100%; padding: 17px; background: linear-gradient(135deg, #0d3b5e, #1565c0); border: none; border-radius: 14px; color: #e1f5fe; cursor: pointer; font-size: 15px; font-weight: 600; box-shadow: 0 4px 24px rgba(13,59,94,0.5); margin-top: 6px; }
+.btn-save.ok { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
+.btn-secondary { width: 100%; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--accent); cursor: pointer; font-size: 13px; margin-top: 8px; }
+.btn-danger { width: 100%; padding: 12px; background: #1a0a0a; border: 1px solid #3a1a1a; border-radius: 10px; color: #ef9a9a; cursor: pointer; font-size: 13px; margin-top: 8px; }
+
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 12px; text-align: center; }
+.stat-icon { font-size: 22px; }
+.stat-val { font-size: 26px; color: var(--accent); font-weight: bold; margin: 4px 0 2px; }
+.stat-lbl { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
+
+.bar-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+.bar-title { font-size: 9px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+.bar-row { margin-bottom: 9px; }
+.bar-lbl { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px; }
+.bar-lbl span:last-child { color: var(--accent); }
+.bar-track { height: 5px; background: #0a1628; border-radius: 3px; }
+.bar-fill { height: 5px; border-radius: 3px; }
+
+.alert-box { background: #1a0d00; border: 1px solid #5d2e00; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.alert-title { font-size: 9px; letter-spacing: 2px; color: var(--orange); text-transform: uppercase; margin-bottom: 8px; }
+.alert-item { font-size: 12px; color: #ffcc80; margin-bottom: 4px; }
+.suggest-box { background: #0a1e0a; border: 1px solid #1a5a1a; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.suggest-title { font-size: 9px; letter-spacing: 2px; color: #69f0ae; text-transform: uppercase; margin-bottom: 8px; }
+.suggest-item { font-size: 12px; color: #b9f6ca; margin-bottom: 4px; }
+
+/* MODAL EDIT */
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 500; display: none; }
+.modal-overlay.open { display: flex; align-items: center; justify-content: center; }
+.modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 20px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+.modal-title { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 14px; text-align: center; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1b5e20; color: #e8f5e9; padding: 12px 24px; border-radius: 24px; font-size: 13px; z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; }
+
+/* PROFIL */
+.profil-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #0d3b5e, #1565c0); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 14px; border: 3px solid var(--accent); }
+.profil-name { text-align: center; font-size: 18px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+.profil-info { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.profil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.profil-field label { font-size: 10px; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* THEME SELECTOR */
+.theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.theme-btn { padding: 10px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; font-size: 10px; text-align: center; }
+.theme-btn.active { border-color: var(--accent); }
+
+/* RAPPORT MÉDECIN */
+.rapport-preview { background: white; color: #1a1a2e; border-radius: 12px; padding: 20px; margin-bottom: 12px; font-family: 'Times New Roman', Georgia, serif; }
+.rapport-header { text-align: center; border-bottom: 3px solid #0d3b5e; padding-bottom: 14px; margin-bottom: 16px; }
+.rapport-logo { font-size: 28px; margin-bottom: 6px; }
+.rapport-title { font-size: 18px; font-weight: bold; color: #0d3b5e; letter-spacing: 2px; }
+.rapport-subtitle { font-size: 11px; color: #546e7a; margin-top: 4px; }
+.rapport-patient { background: #f0f7ff; border-left: 4px solid #0d3b5e; padding: 12px; margin-bottom: 14px; border-radius: 0 8px 8px 0; }
+.rapport-patient-title { font-size: 11px; font-weight: bold; color: #0d3b5e; text-transform: uppercase; margin-bottom: 6px; }
+.rapport-patient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; }
+.rapport-patient-grid span { color: #546e7a; }
+.rapport-patient-grid strong { color: #1a1a2e; }
+.rapport-section-title { font-size: 12px; font-weight: bold; color: #0d3b5e; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #cdd5e0; padding-bottom: 4px; margin: 14px 0 8px; }
+.rapport-entry { background: #f8fafb; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; border-left: 3px solid; }
+.rapport-entry-time { font-size: 13px; font-weight: bold; color: #0d3b5e; }
+.rapport-entry-manual { font-size: 9px; color: #ff9800; font-style: italic; }
+.rapport-entry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 6px; }
+.rapport-entry-item { font-size: 11px; color: #546e7a; }
+.rapport-entry-item strong { color: #1a1a2e; }
+.rapport-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.rapport-stat { background: #f0f7ff; border-radius: 8px; padding: 10px; text-align: center; }
+.rapport-stat-val { font-size: 20px; font-weight: bold; color: #0d3b5e; }
+.rapport-stat-lbl { font-size: 10px; color: #546e7a; }
+.rapport-footer { text-align: center; font-size: 10px; color: #90a4ae; border-top: 1px solid #cdd5e0; padding-top: 10px; margin-top: 14px; }
+.rapport-alerte { background: #fff3e0; border-left: 4px solid #ff9800; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 6px; font-size: 11px; color: #e65100; }
+
+/* EAU */
+.eau-section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.eau-title { font-size: 9px; letter-spacing: 3px; color: #29b6f6; text-transform: uppercase; margin-bottom: 10px; }
+.eau-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.eau-btn { padding: 10px 8px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 11px; text-align: center; }
+.eau-btn.active { border-color: #29b6f6; background: #0a2a3a; color: #29b6f6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-sub">Suivi Médical Personnel</div>
+  <h1>💧 Vesya</h1>
+  <div class="h-meta">
+    <span>Aujourd'hui : <strong id="hToday">0</strong></span>
+    <span>Total : <strong id="hTotal">0</strong></span>
+    <span>Moy/j : <strong id="hMoy">—</strong></span>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="goTo('journal')"><span class="ni">📋</span>Journal</button>
+  <button onclick="goTo('stats')"><span class="ni">📊</span>Stats</button>
+  <button onclick="goTo('add')"><span class="ni">➕</span>Ajouter</button>
+  <button onclick="goTo('rapport')"><span class="ni">🩺</span>Médecin</button>
+  <button onclick="goTo('profil')"><span class="ni">👤</span>Profil</button>
+  <button onclick="goTo('reglages')"><span class="ni">⚙️</span>Réglages</button>
+</nav>
+
+<div class="content">
+
+  <!-- JOURNAL -->
+  <div id="view-journal" class="view active">
+    <div id="journalList"></div>
+  </div>
+
+  <!-- STATS -->
+  <div id="view-stats" class="view">
+    <div id="statsList"></div>
+  </div>
+
+  <!-- AJOUTER -->
+  <div id="view-add" class="view">
+
+    <div class="time-mode-toggle">
+      <button class="time-mode-btn active" id="btnAuto" onclick="setTimeMode('auto')">🕐 Maintenant<br><small>Heure automatique</small></button>
+      <button class="time-mode-btn" id="btnManual" onclick="setTimeMode('manual')">✏️ Dans le passé<br><small>Choisir l'heure</small></button>
+    </div>
+
+    <div id="autoBox" class="time-box">
+      <div class="time-hint">Heure automatique</div>
+      <div class="time-val" id="clockDisplay">—</div>
+      <div class="time-date" id="dateDisplay">—</div>
+    </div>
+
+    <div id="manualBox" class="manual-time-box" style="display:none">
+      <div class="manual-title">✏️ Saisie manuelle</div>
+      <div class="manual-grid">
+        <div class="manual-wrap"><label>📅 Date</label><input type="date" id="manDate" oninput="updateManualPreview()"></div>
+        <div class="manual-wrap"><label>🕐 Heure</label><input type="time" id="manTime" oninput="updateManualPreview()"></div>
+      </div>
+      <div class="manual-preview" id="manPreview">Sélectionne la date et l'heure</div>
+    </div>
+
+    <!-- COULEUR URINE -->
+    <div class="sec">
+      <span class="sec-t">🎨 Couleur de l'urine ✱</span>
+      <div class="chips" id="c-couleur"></div>
+    </div>
+
+    <!-- ASPECT -->
+    <div class="sec">
+      <span class="sec-t">🔍 Aspect / Clarté</span>
+      <div class="chips" id="c-aspect"></div>
+    </div>
+
+    <!-- VOLUME -->
+    <div class="sec">
+      <span class="sec-t">📏 Volume estimé ✱</span>
+      <div class="chips" id="c-volume"></div>
+      <div style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px"><span>Gouttes</span><span>Très abondant</span></div>
+        <input type="range" id="slVol" min="1" max="10" value="5" style="width:100%;accent-color:var(--accent)" oninput="document.getElementById('slVolVal').textContent=this.value+'/10'">
+        <div style="text-align:center;font-size:16px;color:var(--accent);margin-top:4px" id="slVolVal">5/10</div>
+      </div>
+    </div>
+
+    <!-- URGENCE -->
+    <div class="sec">
+      <span class="sec-t">⚡ Degré d'urgence ressentie</span>
+      <div class="chips" id="c-urgence"></div>
+    </div>
+
+    <!-- JET -->
+    <div class="sec">
+      <span class="sec-t">💦 Qualité du jet urinaire</span>
+      <div class="chips" id="c-jet"></div>
+    </div>
+
+    <!-- RESIDUS -->
+    <div class="sec">
+      <span class="sec-t">🔄 Sensation après miction</span>
+      <div class="chips" id="c-residus"></div>
+    </div>
+
+    <!-- POSITION CORPS -->
+    <div class="sec">
+      <span class="sec-t">🧍 Position du corps au moment de l'envie</span>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:8px">Position dans laquelle tu te trouvais quand l'envie d'uriner est arrivée</p>
+      <div class="chips" id="c-position"></div>
+    </div>
+
+    <!-- EAU BOIRE -->
+    <div class="eau-section">
+      <div class="eau-title">💧 Type d'eau consommée aujourd'hui</div>
+      <div class="chips" id="c-eau-type"></div>
+      <div id="eau-details" style="margin-top:10px;display:none">
+        <div style="margin-bottom:8px">
+          <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Marque / Source</label>
+          <input type="text" id="eauMarque" placeholder="Ex: Cristalline, Evian, Source locale...">
+        </div>
+        <div style="margin-bottom:8px">
+          <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Couleur de l'eau</label>
+          <div class="chips" id="c-eau-couleur"></div>
+        </div>
+        <div>
+          <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Aspect de l'eau</label>
+          <div class="chips" id="c-eau-aspect"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ODEUR -->
+    <div class="sec">
+      <span class="sec-t">👃 Odeur de l'urine</span>
+      <div class="chips" id="c-odeur"></div>
+    </div>
+
+    <!-- DOULEURS -->
+    <div class="sec">
+      <span class="sec-t">⚠️ Douleurs / Symptômes</span>
+      <div class="chips" id="c-douleurs"></div>
+    </div>
+
+    <!-- LOCALISATION -->
+    <div class="sec">
+      <span class="sec-t">📍 Localisation de la douleur</span>
+      <div class="pain-grid" id="c-loca"></div>
+    </div>
+
+    <!-- CONTEXTE -->
+    <div class="sec">
+      <span class="sec-t">🌙 Contexte</span>
+      <div class="chips" id="c-contexte"></div>
+    </div>
+
+    <!-- OBSERVATIONS SPÉCIALES -->
+    <div class="sec">
+      <span class="sec-t">🔘 Observations spéciales</span>
+      <div id="togglesWrap"></div>
+    </div>
+
+    <!-- GENE -->
+    <div class="sec">
+      <span class="sec-t">🩸 Intensité de la gêne (1–10)</span>
+      <input type="range" id="slGene" min="1" max="10" value="1" style="width:100%;accent-color:#ff9800" oninput="document.getElementById('slGeneVal').textContent=this.value+'/10'">
+      <div style="text-align:center;font-size:18px;color:#ff9800;margin-top:6px" id="slGeneVal">1/10</div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="sec">
+      <span class="sec-t">📝 Notes libres</span>
+      <textarea id="notesInput" placeholder="Décris librement ce que tu ressens, toute observation particulière..."></textarea>
+    </div>
+
+    <button class="btn-save" id="btnSave" onclick="saveEntry()">💧 Enregistrer cette miction</button>
+  </div>
+
+  <!-- RAPPORT MÉDECIN -->
+  <div id="view-rapport" class="view">
+    <div id="rapportContent"></div>
+    <button class="btn-secondary" onclick="printRapport()">🖨️ Imprimer / Sauvegarder PDF</button>
+    <button class="btn-secondary" onclick="exportTxt()">📄 Exporter en texte</button>
+  </div>
+
+  <!-- PROFIL -->
+  <div id="view-profil" class="view">
+    <div class="sec">
+      <div class="profil-avatar">👤</div>
+      <div class="profil-name" id="profilNom">Mon Profil</div>
+      <div class="profil-info" id="profilInfo">Complète ton profil</div>
+      <div class="profil-grid">
+        <div class="profil-field">
+          <label>Prénom</label>
+          <input type="text" id="pPrenom" placeholder="Ton prénom" oninput="saveProfil()">
+        </div>
+        <div class="profil-field">
+          <label>Nom</label>
+          <input type="text" id="pNom" placeholder="Ton nom" oninput="saveProfil()">
+        </div>
+        <div class="profil-field">
+          <label>Âge</label>
+          <input type="number" id="pAge" placeholder="Ton âge" min="1" max="120" oninput="saveProfil()">
+        </div>
+        <div class="profil-field">
+          <label>Sexe</label>
+          <select id="pSexe" onchange="saveProfil()">
+            <option value="">Choisir</option>
+            <option value="Femme">Femme</option>
+            <option value="Homme">Homme</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="sec" style="margin-top:12px">
+      <span class="sec-t">🩺 Informations médicales</span>
+      <div style="margin-bottom:10px">
+        <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Médecin traitant</label>
+        <input type="text" id="pMedecin" placeholder="Nom du médecin" oninput="saveProfil()">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Pathologies connues</label>
+        <textarea id="pPathologies" placeholder="Ex: diabète, hypertension..." style="min-height:60px" oninput="saveProfil()"></textarea>
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Médicaments en cours</label>
+        <textarea id="pMedicaments" placeholder="Ex: metformine 500mg..." style="min-height:60px" oninput="saveProfil()"></textarea>
+      </div>
+    </div>
+    <div class="sec" id="profilSuggest" style="margin-top:12px;display:none">
+      <span class="sec-t">🤖 Analyse selon ton profil</span>
+      <div id="profilSuggestContent"></div>
+    </div>
+  </div>
+
+  <!-- RÉGLAGES -->
+  <div id="view-reglages" class="view">
+    <div class="sec">
+      <span class="sec-t">🎨 Thème de l'application</span>
+      <div class="theme-grid">
+        <button class="theme-btn active" onclick="setTheme('dark','#0a1628')" style="background:#0a1628;color:#4fc3f7;border-color:#4fc3f7">🌙<br>Sombre</button>
+        <button class="theme-btn" onclick="setTheme('light','#f0f4f8')" style="background:#f0f4f8;color:#0d3b5e">☀️<br>Clair</button>
+        <button class="theme-btn" onclick="setTheme('ocean','#0a2040')" style="background:#0a2040;color:#00e5ff;border-color:#00e5ff">🌊<br>Océan</button>
+        <button class="theme-btn" onclick="setTheme('forest','#0a2010')" style="background:#0a2010;color:#69f0ae;border-color:#69f0ae">🌿<br>Forêt</button>
+      </div>
+    </div>
+    <div class="sec">
+      <span class="sec-t">🔔 Rappels</span>
+      <div class="tog-wrap">
+        <div><div class="tog-label">💧 Rappel hydratation</div><div class="tog-sub">Rappel pour boire de l'eau</div></div>
+        <button class="tog" id="togHydra" onclick="this.classList.toggle('on');saveReglages()"></button>
+      </div>
+      <div class="tog-wrap">
+        <div><div class="tog-label">📋 Rappel journal</div><div class="tog-sub">Rappel d'enregistrer une miction</div></div>
+        <button class="tog" id="togJournal" onclick="this.classList.toggle('on');saveReglages()"></button>
+      </div>
+      <div style="margin-top:12px">
+        <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Fréquence rappel hydratation</label>
+        <select id="freqHydra" onchange="saveReglages()">
+          <option value="30">Toutes les 30 min</option>
+          <option value="60" selected>Toutes les heures</option>
+          <option value="120">Toutes les 2h</option>
+          <option value="180">Toutes les 3h</option>
+        </select>
+      </div>
+    </div>
+    <div class="sec">
+      <span class="sec-t">📋 Données</span>
+      <button class="btn-secondary" onclick="exportTxt()">📤 Exporter toutes les données</button>
+      <button class="btn-danger" onclick="clearAll()">🗑️ Effacer toutes les données</button>
+    </div>
+    <div class="sec" style="margin-top:12px">
+      <span class="sec-t">ℹ️ Aide</span>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">
+        <div>💧 <strong style="color:var(--text)">Couleur urine</strong> → Indique l'état d'hydratation</div>
+        <div>⚡ <strong style="color:var(--text)">Urgence</strong> → Intensité de l'envie d'uriner</div>
+        <div>🧍 <strong style="color:var(--text)">Position</strong> → Position du corps quand l'envie arrive</div>
+        <div>🔄 <strong style="color:var(--text)">Sensation après</strong> → Ressenti après avoir uriné</div>
+        <div>💧 <strong style="color:var(--text)">Type d'eau</strong> → Eau consommée dans la journée</div>
+        <div>✏️ <strong style="color:var(--text)">Dans le passé</strong> → Pour saisir une miction ratée</div>
+        <div>🩺 <strong style="color:var(--text)">Médecin</strong> → Rapport à imprimer pour le médecin</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">✏️ Modifier cette entrée</div>
+    <div id="modalContent"></div>
+    <button class="btn-save" onclick="saveEdit()">💾 Enregistrer les modifications</button>
+    <button class="btn-danger" onclick="closeModal()" style="margin-top:8px">Annuler</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// DONNÉES
+// ══════════════════════════════════════════
+const COULEURS = [
+  {v:"Incolore / eau",d:"#dff6ff"},{v:"Très pâle",d:"#e8f5e9"},
+  {v:"Jaune paille",d:"#fff9c4"},{v:"Jaune normal",d:"#ffe082"},
+  {v:"Jaune foncé",d:"#f9a825"},{v:"Jaune ambré",d:"#e65100"},
+  {v:"Orange",d:"#ff6d00"},{v:"Brun / thé",d:"#795548"},
+  {v:"Rosé",d:"#f48fb1"},{v:"Rouge / sang",d:"#c62828"},
+  {v:"Trouble / laiteux",d:"#cfd8dc"},{v:"Mousse / bulles",d:"#b3e5fc"}
+];
+const CC = Object.fromEntries(COULEURS.map(c=>[c.v,c.d]));
+const ASPECTS = ["Limpide","Légèrement trouble","Très trouble","Avec dépôt","Avec mousse","Avec filaments","Avec sang visible"];
+const VOLUMES = [
+  {v:"Rien / 0 ml",i:"⭕"},{v:"Quelques gouttes (<5ml)",i:"💧"},
+  {v:"Très peu (5–30ml)",i:"🔹"},{v:"Peu (30–100ml)",i:"🔸"},
+  {v:"Moyen (100–200ml)",i:"🔶"},{v:"Normal (200–350ml)",i:"💦"},
+  {v:"Abondant (350–500ml)",i:"🌊"},{v:"Très abondant (>500ml)",i:"🌊🌊"}
+];
+const URGENCES = [
+  {v:"Aucune urgence",c:"#4caf50"},{v:"Légère envie",c:"#8bc34a"},
+  {v:"Envie modérée",c:"#ffc107"},{v:"Envie forte",c:"#ff9800"},
+  {v:"Très urgente",c:"#f44336"},{v:"Insupportable / fuite",c:"#b71c1c"}
+];
+const JETS = ["Jet normal / fort","Jet faible","Jet haché","Petit filet","Goutte à goutte","Pas de jet malgré envie","Difficile à démarrer","Douloureux"];
+const RESIDUS = ["Vidange complète","Sensation incomplète","Résidu immédiat","Envie de réuriner tout de suite","Brûlure après","Douleur après"];
+const POSITIONS = ["Debout","Assis(e)","Allongé(e)","Accroupi(e)","En marchant","Après effort","Au repos","Pendant le sommeil"];
+const EAU_TYPES = ["Eau minérale","Eau du robinet","Eau de forage","Eau filtrée","Eau bouillie","Autre"];
+const EAU_COULEURS = ["Claire / transparente","Légèrement jaunâtre","Trouble","Brunâtre","Verdâtre","Rougeâtre"];
+const EAU_ASPECTS = ["Limpide","Légèrement trouble","Très trouble","Avec dépôt","Avec odeur","Avec goût particulier"];
+const ODEURS = ["Aucune odeur","Légère odeur normale","Forte / concentrée","Ammoniaquée","Sucrée / fruitée","Inhabituelle","Odeur de poisson"];
+const DOULEURS = ["Aucune douleur","Brûlure en urinant","Picotement","Pression vésicale","Lourdeur pelvienne","Bas du ventre","Dos / reins","Urètre","Crampes","Douleur après"];
+const LOCAS = ["Rein gauche","Rein droit","Bas du dos","Bas ventre","Vessie","Urètre","Périnée","Aucune"];
+const CONTEXTES = ["Réveil / nuit","Matin","Après-midi","Soir","Après repas","Après boisson","Après effort","Au repos","Après stress","Avant de dormir"];
+const TOGGLES = [
+  {k:"fuite",l:"💦 Fuite urinaire",s:"Urine sortie sans se retenir"},
+  {k:"nycturie",l:"🌙 Réveil nocturne",s:"Miction qui a réveillé"},
+  {k:"effort",l:"🏃 Fuite à l'effort",s:"Toux, rire, éternuement"},
+  {k:"sang",l:"🔴 Sang observé",s:"Sang visible dans les urines"},
+  {k:"rein",l:"🫘 Douleur rénale",s:"Douleur dos côté reins"}
+];
+
+// ══════════════════════════════════════════
+// STOCKAGE
+// ══════════════════════════════════════════
+const KEYS = ["jm_v4_a","jm_v4_b","jm_v4_c"];
+function persist(data){const s=JSON.stringify(data);KEYS.forEach(k=>{try{localStorage.setItem(k,s);}catch(e){}});try{sessionStorage.setItem("jm_s",s);}catch(e){}}
+function load(){for(const k of KEYS){try{const v=localStorage.getItem(k);if(v)return JSON.parse(v);}catch(e){}}try{const v=sessionStorage.getItem("jm_s");if(v)return JSON.parse(v);}catch(e){}return[];}
+function loadProfil(){try{return JSON.parse(localStorage.getItem("jm_profil")||"{}");}catch(e){return{};}}
+function saveProfil(){
+  const p={prenom:gv("pPrenom"),nom:gv("pNom"),age:gv("pAge"),sexe:gv("pSexe"),medecin:gv("pMedecin"),pathologies:gv("pPathologies"),medicaments:gv("pMedicaments")};
+  localStorage.setItem("jm_profil",JSON.stringify(p));
+  updateProfilDisplay(p);
+}
+function saveReglages(){
+  const r={hydra:document.getElementById("togHydra").classList.contains("on"),journal:document.getElementById("togJournal").classList.contains("on"),freqHydra:gv("freqHydra")};
+  localStorage.setItem("jm_reglages",JSON.stringify(r));
+  if(r.hydra) setupHydraReminder(parseInt(r.freqHydra));
+}
+function loadReglages(){try{return JSON.parse(localStorage.getItem("jm_reglages")||"{}");}catch(e){return{};}}
+
+let entries = load();
+let form = rf();
+let timeMode = "auto";
+let curView = "journal";
+let editId = null;
+let hydraInterval = null;
+
+function rf(){return{couleur:"",aspect:[],volume:"",volN:5,urgence:"",jet:[],residus:[],position:"",eauType:"",eauMarque:"",eauCouleur:"",eauAspect:[],odeur:"",douleurs:[],loca:[],contexte:[],toggles:{},geneN:1,notes:""};}
+function gv(id){const el=document.getElementById(id);return el?el.value:"";}
+
+// ══════════════════════════════════════════
+// FORMATS
+// ══════════════════════════════════════════
+function fmtTime(iso){return new Date(iso).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
+function fmtDate(iso){return new Date(iso).toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long"});}
+function fmtFull(iso){return new Date(iso).toLocaleString("fr-FR",{weekday:"short",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}
+function fmtShort(iso){return new Date(iso).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric"});}
+function nowTime(){return new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
+function nowDate(){return new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goTo(name){
+  curView=name;
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("view-"+name).classList.add("active");
+  document.querySelectorAll("nav button")[["journal","stats","add","rapport","profil","reglages"].indexOf(name)].classList.add("active");
+  if(name==="journal") renderJournal();
+  if(name==="stats") renderStats();
+  if(name==="add") initForm();
+  if(name==="rapport") renderRapport();
+  if(name==="profil") initProfil();
+  if(name==="reglages") initReglages();
+  updateHeader();
+}
+
+// ══════════════════════════════════════════
+// JOURNAL
+// ══════════════════════════════════════════
+function renderJournal(){
+  const el=document.getElementById("journalList");
+  if(!entries.length){el.innerHTML=`<div class="empty"><div class="ico">💧</div><p style="font-size:14px;line-height:1.8">Aucune entrée.<br>Appuie sur <strong style="color:var(--accent)">➕ Ajouter</strong></p></div>`;return;}
+  const g={};
+  entries.forEach(e=>{const k=fmtDate(e.date);if(!g[k])g[k]=[];g[k].push(e);});
+  let h="";
+  Object.entries(g).forEach(([date,arr])=>{
+    h+=`<div class="day-group"><div class="day-label"><span>${date}</span><span class="day-badge">${arr.length} miction${arr.length>1?"s":""}</span></div>`;
+    arr.forEach(e=>{
+      const col=CC[e.couleur]||"#546e7a";
+      const urg=URGENCES.find(u=>u.v===e.urgence);
+      const syms=(e.douleurs||[]).filter(d=>d!=="Aucune douleur").map(d=>`<span class="sym s-warn">⚠️ ${d}</span>`).join("");
+      const togs=Object.entries(e.toggles||{}).filter(([,v])=>v).map(([k])=>{const t=TOGGLES.find(x=>x.k===k);return t?`<span class="sym s-info">🔔 ${t.l}</span>`:""}).join("");
+      h+=`<div class="card" onclick="openEdit(${e.id})">
+        <div class="card-bar" style="background:linear-gradient(180deg,${col},transparent)"></div>
+        <button class="btn-del" onclick="event.stopPropagation();delEntry(${e.id})">✕</button>
+        <div class="card-inner">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+            <span class="card-time">${fmtTime(e.date)}</span>
+            ${e.isManual?`<span class="card-manual">✏️ saisie manuelle</span>`:""}
+          </div>
+          <div class="card-badges">
+            ${e.couleur?`<span class="badge" style="background:${col};color:#0a1628">${e.couleur}</span>`:""}
+            ${e.volume?`<span class="badge" style="background:#0d3b5e;color:var(--accent)">📏 ${e.volume}</span>`:""}
+            ${urg?`<span class="badge" style="background:${urg.c}22;color:${urg.c};border:1px solid ${urg.c}44">⚡ ${urg.v}</span>`:""}
+          </div>
+          <div class="card-meta">
+            ${e.jet&&e.jet.length?`<span>💦 ${e.jet[0]}</span>`:""}
+            ${e.position?`<span>🧍 ${e.position}</span>`:""}
+            ${e.eauType?`<span>💧 ${e.eauType}${e.eauMarque?" ("+e.eauMarque+")":" "}</span>`:""}
+            ${e.geneN>1?`<span style="color:#ff9800">🩸 Gêne:${e.geneN}/10</span>`:""}
+          </div>
+          ${syms||togs?`<div class="sym-tags">${syms}${togs}</div>`:""}
+          ${e.notes?`<div class="card-note">« ${e.notes} »</div>`:""}
+        </div>
+      </div>`;
+    });
+    h+="</div>";
+  });
+  el.innerHTML=h;
+}
+
+function delEntry(id){
+  if(confirm("Supprimer cette entrée ?")){
+    entries=entries.filter(e=>e.id!==id);
+    persist(entries);renderJournal();updateHeader();
+    showToast("🗑️ Entrée supprimée");
+  }
+}
+
+// ══════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════
+function renderStats(){
+  const el=document.getElementById("statsList");
+  const tod=entries.filter(e=>new Date(e.date).toDateString()===new Date().toDateString());
+  const g={};entries.forEach(e=>{const k=new Date(e.date).toDateString();if(!g[k])g[k]=0;g[k]++;});
+  const nbJ=Object.keys(g).length;
+  const moy=nbJ>0?(entries.length/nbJ).toFixed(1):0;
+  const profil=loadProfil();
+
+  if(!entries.length){el.innerHTML=`<div class="empty"><p>Aucune donnée à afficher.</p></div>`;return;}
+
+  // Alertes
+  let alerts=[], suggests=[];
+  if(nbJ>0&&entries.length/nbJ>20) alerts.push("⚠️ Fréquence très élevée (>20/jour) — à signaler");
+  if(entries.some(e=>(e.toggles||{}).sang)) alerts.push("🔴 Sang dans les urines signalé — consultation urgente");
+  if(entries.some(e=>(e.douleurs||[]).includes("Dos / reins"))) alerts.push("⚠️ Douleur rénale détectée dans vos entrées");
+  if(entries.filter(e=>e.couleur==="Incolore / eau").length>entries.length*0.5) suggests.push("💧 Urines très claires fréquentes — possible surhydratation ou diabète insipide");
+  if(tod.length<4) suggests.push("💧 Pensez à bien vous hydrater aujourd'hui !");
+  if(profil.age){
+    const age=parseInt(profil.age);
+    if(age>60&&moy>10) alerts.push("⚠️ Fréquence élevée pour votre âge ("+age+" ans) — consultez un médecin");
+    if(age<18&&moy>8) suggests.push("ℹ️ Fréquence normale pour un jeune — entre 6-8 mictions/jour");
+  }
+
+  function barSec(title,items,getC,barCol){
+    const rows=items.map(i=>({i,c:getC(i)})).filter(x=>x.c>0).sort((a,b)=>b.c-a.c);
+    if(!rows.length)return"";
+    let h=`<div class="bar-box"><div class="bar-title">${title}</div>`;
+    rows.forEach(({i,c})=>{
+      const pct=Math.round(c/entries.length*100);
+      h+=`<div class="bar-row"><div class="bar-lbl"><span>${i}</span><span>${c}× (${pct}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${barCol(i)}"></div></div></div>`;
+    });
+    return h+"</div>";
+  }
+
+  el.innerHTML=`
+    ${alerts.length?`<div class="alert-box"><div class="alert-title">🚨 Alertes médicales</div>${alerts.map(a=>`<div class="alert-item">${a}</div>`).join("")}</div>`:""}
+    ${suggests.length?`<div class="suggest-box"><div class="suggest-title">💡 Suggestions</div>${suggests.map(s=>`<div class="suggest-item">${s}</div>`).join("")}</div>`:""}
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-icon">💧</div><div class="stat-val">${entries.length}</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-box"><div class="stat-icon">📅</div><div class="stat-val">${tod.length}</div><div class="stat-lbl">Aujourd'hui</div></div>
+      <div class="stat-box"><div class="stat-icon">📈</div><div class="stat-val">${moy}</div><div class="stat-lbl">Moy/jour</div></div>
+      <div class="stat-box"><div class="stat-icon">🗓️</div><div class="stat-val">${nbJ}</div><div class="stat-lbl">Jours suivis</div></div>
+    </div>
+    ${barSec("🎨 Couleurs",COULEURS.map(c=>c.v),c=>entries.filter(e=>e.couleur===c).length,c=>`linear-gradient(90deg,${CC[c]||"#ccc"},${CC[c]||"#ccc"}88)`)}
+    ${barSec("📏 Volumes",VOLUMES.map(v=>v.v),v=>entries.filter(e=>e.volume===v).length,()=>"linear-gradient(90deg,#4fc3f7,#0288d1)")}
+    ${barSec("⚡ Urgences",URGENCES.map(u=>u.v),u=>entries.filter(e=>e.urgence===u).length,u=>{const c=(URGENCES.find(x=>x.v===u)||{c:"#4fc3f7"}).c;return`linear-gradient(90deg,${c},${c}99)`;})}
+    ${barSec("⚠️ Douleurs",DOULEURS,d=>entries.filter(e=>(e.douleurs||[]).includes(d)).length,d=>d==="Aucune douleur"?"linear-gradient(90deg,#4caf50,#388e3c)":"linear-gradient(90deg,#ef9a9a,#c62828)")}
+    ${barSec("💧 Eau consommée",EAU_TYPES,t=>entries.filter(e=>e.eauType===t).length,()=>"linear-gradient(90deg,#29b6f6,#0288d1)")}
+  `;
+}
+
+// ══════════════════════════════════════════
+// RAPPORT MÉDECIN
+// ══════════════════════════════════════════
+function renderRapport(){
+  const el=document.getElementById("rapportContent");
+  const profil=loadProfil();
+  const tod=entries.filter(e=>new Date(e.date).toDateString()===new Date().toDateString());
+  const g={};entries.forEach(e=>{const k=new Date(e.date).toDateString();if(!g[k])g[k]=0;g[k]++;});
+  const nbJ=Object.keys(g).length;
+  const moy=nbJ>0?(entries.length/nbJ).toFixed(1):0;
+
+  let alerts=[];
+  if(entries.some(e=>(e.toggles||{}).sang)) alerts.push("Présence de sang dans les urines signalée");
+  if(entries.some(e=>(e.douleurs||[]).includes("Dos / reins"))) alerts.push("Douleurs rénales rapportées");
+  if(nbJ>0&&entries.length/nbJ>20) alerts.push("Fréquence mictionnelle très élevée (>20/jour)");
+
+  // Couleurs les plus fréquentes
+  const couleurStats = COULEURS.map(c=>({v:c.v,n:entries.filter(e=>e.couleur===c.v).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,3);
+  const urgenceStats = URGENCES.map(u=>({v:u.v,n:entries.filter(e=>e.urgence===u.v).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,3);
+  const douleurStats = DOULEURS.filter(d=>d!=="Aucune douleur").map(d=>({v:d,n:entries.filter(e=>(e.douleurs||[]).includes(d)).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,3);
+
+  const recentEntries = entries.slice(0,20);
+
+  el.innerHTML=`<div class="rapport-preview" id="rapportDoc">
+    <div class="rapport-header">
+      <div class="rapport-logo">💧</div>
+      <div class="rapport-title">JOURNAL MICTIONNEL</div>
+      <div class="rapport-subtitle">Rapport médical — Généré le ${new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}</div>
+    </div>
+
+    ${profil.prenom||profil.nom?`
+    <div class="rapport-patient">
+      <div class="rapport-patient-title">🧑 Informations du patient</div>
+      <div class="rapport-patient-grid">
+        <span>Nom complet :</span><strong>${(profil.prenom||"")} ${(profil.nom||"")}</strong>
+        <span>Âge :</span><strong>${profil.age||"Non renseigné"} ${profil.age?"ans":""}</strong>
+        <span>Sexe :</span><strong>${profil.sexe||"Non renseigné"}</strong>
+        <span>Médecin :</span><strong>${profil.medecin||"Non renseigné"}</strong>
+      </div>
+      ${profil.pathologies?`<div style="margin-top:8px;font-size:11px"><span style="color:#546e7a">Pathologies connues : </span><strong>${profil.pathologies}</strong></div>`:""}
+      ${profil.medicaments?`<div style="margin-top:4px;font-size:11px"><span style="color:#546e7a">Médicaments en cours : </span><strong>${profil.medicaments}</strong></div>`:""}
+    </div>`:""}
+
+    <div class="rapport-section-title">📊 Statistiques globales</div>
+    <div class="rapport-stats">
+      <div class="rapport-stat"><div class="rapport-stat-val">${entries.length}</div><div class="rapport-stat-lbl">Total mictions</div></div>
+      <div class="rapport-stat"><div class="rapport-stat-val">${moy}</div><div class="rapport-stat-lbl">Moy. par jour</div></div>
+      <div class="rapport-stat"><div class="rapport-stat-val">${nbJ}</div><div class="rapport-stat-lbl">Jours suivis</div></div>
+    </div>
+
+    ${alerts.length?`
+    <div class="rapport-section-title">🚨 Alertes importantes</div>
+    ${alerts.map(a=>`<div class="rapport-alerte">⚠️ ${a}</div>`).join("")}`:""}
+
+    ${couleurStats.length?`
+    <div class="rapport-section-title">🎨 Couleurs les plus fréquentes</div>
+    ${couleurStats.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:50%;background:${CC[c.v]||"#ccc"};flex-shrink:0;border:1px solid #ccc"></div><span style="font-size:12px;flex:1">${c.v}</span><strong style="font-size:12px;color:#0d3b5e">${c.n} fois (${Math.round(c.n/entries.length*100)}%)</strong></div>`).join("")}`:""}
+
+    ${urgenceStats.length?`
+    <div class="rapport-section-title">⚡ Niveaux d'urgence les plus fréquents</div>
+    ${urgenceStats.map(u=>`<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;padding:4px 0;border-bottom:1px solid #f0f0f0"><span>${u.v}</span><strong style="color:#0d3b5e">${u.n} fois</strong></div>`).join("")}`:""}
+
+    ${douleurStats.length?`
+    <div class="rapport-section-title">⚠️ Symptômes les plus rapportés</div>
+    ${douleurStats.map(d=>`<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;padding:4px 0;border-bottom:1px solid #f0f0f0"><span>${d.v}</span><strong style="color:#c62828">${d.n} fois</strong></div>`).join("")}`:""}
+
+    <div class="rapport-section-title">📋 Entrées récentes (${Math.min(20,entries.length)} dernières)</div>
+    ${recentEntries.map((e,i)=>{
+      const col=CC[e.couleur]||"#546e7a";
+      const syms=(e.douleurs||[]).filter(d=>d!=="Aucune douleur");
+      const togs=Object.entries(e.toggles||{}).filter(([,v])=>v).map(([k])=>(TOGGLES.find(x=>x.k===k)||{l:k}).l);
+      return `<div class="rapport-entry" style="border-left-color:${col}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="rapport-entry-time">${fmtFull(e.date)}</span>
+          ${e.isManual?`<span class="rapport-entry-manual">✏️ saisie manuelle</span>`:""}
+        </div>
+        <div class="rapport-entry-grid">
+          ${e.couleur?`<div class="rapport-entry-item"><span>Couleur : </span><strong>${e.couleur}</strong></div>`:""}
+          ${e.volume?`<div class="rapport-entry-item"><span>Volume : </span><strong>${e.volume}</strong></div>`:""}
+          ${e.urgence?`<div class="rapport-entry-item"><span>Urgence : </span><strong>${e.urgence}</strong></div>`:""}
+          ${e.jet&&e.jet.length?`<div class="rapport-entry-item"><span>Jet : </span><strong>${e.jet.join(", ")}</strong></div>`:""}
+          ${e.position?`<div class="rapport-entry-item"><span>Position : </span><strong>${e.position}</strong></div>`:""}
+          ${e.odeur&&e.odeur!=="Aucune odeur"?`<div class="rapport-entry-item"><span>Odeur : </span><strong>${e.odeur}</strong></div>`:""}
+          ${e.eauType?`<div class="rapport-entry-item"><span>Eau : </span><strong>${e.eauType}${e.eauMarque?" ("+e.eauMarque+")":""}</strong></div>`:""}
+          ${e.geneN>1?`<div class="rapport-entry-item"><span>Gêne : </span><strong>${e.geneN}/10</strong></div>`:""}
+        </div>
+        ${syms.length?`<div style="font-size:11px;color:#c62828;margin-top:4px">⚠️ ${syms.join(", ")}</div>`:""}
+        ${togs.length?`<div style="font-size:11px;color:#ff9800;margin-top:2px">🔔 ${togs.join(", ")}</div>`:""}
+        ${e.notes?`<div style="font-size:11px;color:#546e7a;font-style:italic;margin-top:4px">« ${e.notes} »</div>`:""}
+      </div>`;
+    }).join("")}
+
+    <div class="rapport-footer">
+      Document généré par Vesya • ${new Date().toLocaleDateString("fr-FR")} •
+      Ce document est confidentiel et destiné uniquement à votre médecin
+    </div>
+  </div>`;
+}
+
+function printRapport(){
+  const content = document.getElementById("rapportDoc");
+  if(!content){showToast("⚠️ Aucune donnée à imprimer");return;}
+  const w = window.open("","_blank");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Vesya - Rapport Médical</title><style>
+    body{font-family:'Times New Roman',Georgia,serif;color:#1a1a2e;background:white;padding:20px;max-width:800px;margin:0 auto}
+    ${document.querySelector("style").innerHTML}
+    @media print{body{padding:0}}
+  </style></head><body>${content.outerHTML}</body></html>`);
+  w.document.close();
+  w.print();
+}
+
+function exportTxt(){
+  const profil=loadProfil();
+  const g={};entries.forEach(e=>{const k=new Date(e.date).toDateString();if(!g[k])g[k]=0;g[k]++;});
+  const moy=Object.keys(g).length>0?(entries.length/Object.keys(g).length).toFixed(1):0;
+  let t="JOURNAL MICTIONNEL — RAPPORT MEDICAL\n";
+  t+="=====================================\n";
+  t+=`Genere le : ${new Date().toLocaleDateString("fr-FR")}\n`;
+  if(profil.prenom) t+=`Patient : ${profil.prenom} ${profil.nom||""}\n`;
+  if(profil.age) t+=`Age : ${profil.age} ans\n`;
+  if(profil.sexe) t+=`Sexe : ${profil.sexe}\n`;
+  if(profil.medecin) t+=`Medecin : ${profil.medecin}\n`;
+  t+=`Total mictions : ${entries.length}\n`;
+  t+=`Moyenne par jour : ${moy}\n`;
+  t+=`Jours suivis : ${Object.keys(g).length}\n\n`;
+  t+="DETAIL DES ENTREES\n";
+  t+="==================\n\n";
+  entries.forEach((e,i)=>{
+    t+=`[${i+1}] ${new Date(e.date).toLocaleString("fr-FR")}${e.isManual?" (saisie manuelle)":""}\n`;
+    if(e.couleur) t+=`  Couleur   : ${e.couleur}\n`;
+    if(e.volume)  t+=`  Volume    : ${e.volume} (${e.volN}/10)\n`;
+    if(e.urgence) t+=`  Urgence   : ${e.urgence}\n`;
+    if(e.jet&&e.jet.length) t+=`  Jet       : ${e.jet.join(", ")}\n`;
+    if(e.residus&&e.residus.length) t+=`  Apres     : ${e.residus.join(", ")}\n`;
+    if(e.position) t+=`  Position  : ${e.position}\n`;
+    if(e.eauType) t+=`  Eau       : ${e.eauType}${e.eauMarque?" ("+e.eauMarque+")":""}\n`;
+    if(e.odeur&&e.odeur!=="Aucune odeur") t+=`  Odeur     : ${e.odeur}\n`;
+    if(e.douleurs&&e.douleurs.length) t+=`  Douleurs  : ${e.douleurs.join(", ")}\n`;
+    if(e.geneN>1) t+=`  Gene      : ${e.geneN}/10\n`;
+    const togs=Object.entries(e.toggles||{}).filter(([,v])=>v).map(([k])=>(TOGGLES.find(x=>x.k===k)||{l:k}).l);
+    if(togs.length) t+=`  Alertes   : ${togs.join(", ")}\n`;
+    if(e.notes) t+=`  Notes     : ${e.notes}\n`;
+    t+="\n";
+  });
+  const b=new Blob([t],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(b);
+  a.download="rapport_medical_mictionnel.txt";
+  a.click();
+  showToast("✅ Rapport exported !");
+}
+
+// ══════════════════════════════════════════
+// FORMULAIRE
+// ══════════════════════════════════════════
+function initForm(){
+  form=rf();
+  document.getElementById("notesInput").value="";
+  document.getElementById("slVol").value=5;document.getElementById("slVolVal").textContent="5/10";
+  document.getElementById("slGene").value=1;document.getElementById("slGeneVal").textContent="1/10";
+  timeMode="auto";setTimeMode("auto");
+  buildAll();
+  const b=document.getElementById("btnSave");
+  b.textContent="💧 Enregistrer cette miction";b.classList.remove("ok");
+}
+
+function buildAll(){
+  buildCol();
+  buildSimple("c-aspect",ASPECTS,"aspect",true);
+  buildVol();buildUrg();
+  buildSimple("c-jet",JETS,"jet",true);
+  buildSimple("c-residus",RESIDUS,"residus",true);
+  buildSimple("c-position",POSITIONS,"position",false);
+  buildEauType();
+  buildSimple("c-eau-couleur",EAU_COULEURS,"eauCouleur",false);
+  buildSimple("c-eau-aspect",EAU_ASPECTS,"eauAspect",true);
+  buildSimple("c-odeur",ODEURS,"odeur",false);
+  buildDoul();buildLoca();
+  buildSimple("c-contexte",CONTEXTES,"contexte",true);
+  buildToggles();
+}
+
+function setTimeMode(mode){
+  timeMode=mode;
+  document.getElementById("btnAuto").classList.toggle("active",mode==="auto");
+  document.getElementById("btnManual").classList.toggle("active",mode==="manual");
+  document.getElementById("autoBox").style.display=mode==="auto"?"block":"none";
+  document.getElementById("manualBox").style.display=mode==="manual"?"block":"none";
+  if(mode==="manual"){
+    const now=new Date();
+    document.getElementById("manDate").value=now.toISOString().split("T")[0];
+    document.getElementById("manTime").value=now.toTimeString().slice(0,5);
+    updateManualPreview();
+  }
+}
+
+function updateManualPreview(){
+  const d=document.getElementById("manDate").value;
+  const t=document.getElementById("manTime").value;
+  if(d&&t){
+    const dt=new Date(d+"T"+t);
+    document.getElementById("manPreview").textContent="📅 "+dt.toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long"})+" à "+dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  }
+}
+
+function getEntryDate(){
+  if(timeMode==="manual"){
+    const d=document.getElementById("manDate").value;
+    const t=document.getElementById("manTime").value;
+    if(d&&t)return new Date(d+"T"+t).toISOString();
+  }
+  return new Date().toISOString();
+}
+
+function buildCol(){
+  const el=document.getElementById("c-couleur");el.innerHTML="";
+  COULEURS.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="chip"+(form.couleur===c.v?" c-blue":"");
+    b.innerHTML=`<span class="cd" style="background:${c.d}"></span>${c.v}`;
+    b.onclick=()=>{form.couleur=form.couleur===c.v?"":c.v;buildCol();};
+    el.appendChild(b);
+  });
+}
+
+function buildVol(){
+  const el=document.getElementById("c-volume");el.innerHTML="";
+  VOLUMES.forEach(v=>{
+    const b=document.createElement("button");
+    b.className="chip"+(form.volume===v.v?" c-blue":"");
+    b.textContent=v.i+" "+v.v;
+    b.onclick=()=>{form.volume=form.volume===v.v?"":v.v;buildVol();};
+    el.appendChild(b);
+  });
+}
+
+function buildUrg(){
+  const el=document.getElementById("c-urgence");el.innerHTML="";
+  URGENCES.forEach(u=>{
+    const b=document.createElement("button");
+    const active=form.urgence===u.v;
+    b.className="chip";
+    if(active){b.style.borderColor=u.c;b.style.background=u.c+"22";b.style.color=u.c;}
+    b.textContent=u.v;
+    b.onclick=()=>{form.urgence=form.urgence===u.v?"":u.v;buildUrg();};
+    el.appendChild(b);
+  });
+}
+
+function buildEauType(){
+  const el=document.getElementById("c-eau-type");el.innerHTML="";
+  EAU_TYPES.forEach(t=>{
+    const b=document.createElement("button");
+    const active=form.eauType===t;
+    b.className="chip"+(active?" c-blue":"");
+    b.textContent=t;
+    b.onclick=()=>{
+      form.eauType=form.eauType===t?"":t;
+      document.getElementById("eau-details").style.display=form.eauType?"block":"none";
+      buildEauType();
+    };
+    el.appendChild(b);
+  });
+}
+
+function buildSimple(cid,opts,key,isMulti){
+  const el=document.getElementById(cid);if(!el)return;el.innerHTML="";
+  opts.forEach(opt=>{
+    const b=document.createElement("button");
+    const active=isMulti?(form[key]||[]).includes(opt):form[key]===opt;
+    b.className="chip"+(active?" c-blue":"");b.textContent=opt;
+    b.onclick=()=>{
+      if(isMulti){if(!form[key])form[key]=[];if(form[key].includes(opt))form[key]=form[key].filter(x=>x!==opt);else form[key].push(opt);}
+      else form[key]=form[key]===opt?"":opt;
+      buildSimple(cid,opts,key,isMulti);
+    };
+    el.appendChild(b);
+  });
+}
+
+function buildDoul(){
+  const el=document.getElementById("c-douleurs");el.innerHTML="";
+  DOULEURS.forEach(d=>{
+    const b=document.createElement("button");
+    const active=(form.douleurs||[]).includes(d);
+    b.className="chip"+(active?(d==="Aucune douleur"?" c-green":" c-red"):"");
+    b.textContent=d;
+    b.onclick=()=>{if(!form.douleurs)form.douleurs=[];if(form.douleurs.includes(d))form.douleurs=form.douleurs.filter(x=>x!==d);else form.douleurs.push(d);buildDoul();};
+    el.appendChild(b);
+  });
+}
+
+function buildLoca(){
+  const el=document.getElementById("c-loca");el.innerHTML="";
+  LOCAS.forEach(l=>{
+    const b=document.createElement("button");
+    const active=(form.loca||[]).includes(l);
+    b.className="pain-btn"+(active?" c-red":"");b.textContent=l;
+    b.onclick=()=>{if(!form.loca)form.loca=[];if(form.loca.includes(l))form.loca=form.loca.filter(x=>x!==l);else form.loca.push(l);buildLoca();};
+    el.appendChild(b);
+  });
+}
+
+function buildToggles(){
+  const el=document.getElementById("togglesWrap");el.innerHTML="";
+  TOGGLES.forEach(t=>{
+    const on=form.toggles[t.k]||false;
+    const d=document.createElement("div");d.className="tog-wrap";
+    d.innerHTML=`<div><div class="tog-label">${t.l}</div><div class="tog-sub">${t.s}</div></div><button class="tog ${on?"on":""}" onclick="form.toggles['${t.k}']=!form.toggles['${t.k}'];this.classList.toggle('on')"></button>`;
+    el.appendChild(d);
+  });
+}
+
+function saveEntry(){
+  if(!form.couleur&&!form.volume){showToast("⚠️ Remplis au moins la couleur ou le volume");return;}
+  const entry={
+    id:Date.now(),date:getEntryDate(),isManual:timeMode==="manual",
+    couleur:form.couleur,aspect:form.aspect||[],
+    volume:form.volume,volN:parseInt(document.getElementById("slVol").value),
+    urgence:form.urgence,jet:form.jet||[],residus:form.residus||[],
+    position:form.position,
+    eauType:form.eauType,eauMarque:document.getElementById("eauMarque").value.trim(),
+    eauCouleur:form.eauCouleur,eauAspect:form.eauAspect||[],
+    odeur:form.odeur,douleurs:form.douleurs||[],loca:form.loca||[],
+    contexte:form.contexte||[],toggles:{...(form.toggles||{})},
+    geneN:parseInt(document.getElementById("slGene").value),
+    notes:document.getElementById("notesInput").value.trim()
+  };
+  entries.unshift(entry);
+  entries.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  persist(entries);updateHeader();
+  const b=document.getElementById("btnSave");
+  b.textContent="✅ Enregistré !";b.classList.add("ok");
+  showToast(timeMode==="manual"?"✅ Entrée passée enregistrée !":"✅ Miction enregistrée !");
+  setTimeout(()=>goTo("journal"),1600);
+}
+
+// ══════════════════════════════════════════
+// EDIT MODAL
+// ══════════════════════════════════════════
+function openEdit(id){
+  const e=entries.find(x=>x.id===id);if(!e)return;
+  editId=id;
+  document.getElementById("modalContent").innerHTML=`
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;text-align:center">${fmtFull(e.date)}</div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">📝 Notes</label>
+      <textarea id="editNotes" style="min-height:70px">${e.notes||""}</textarea>
+    </div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">🩸 Intensité gêne</label>
+      <input type="range" id="editGene" min="1" max="10" value="${e.geneN||1}" style="width:100%;accent-color:#ff9800" oninput="document.getElementById('editGeneVal').textContent=this.value+'/10'">
+      <div style="text-align:center;color:#ff9800;margin-top:4px" id="editGeneVal">${e.geneN||1}/10</div>
+    </div>
+  `;
+  document.getElementById("modalOverlay").classList.add("open");
+}
+
+function saveEdit(){
+  const e=entries.find(x=>x.id===editId);if(!e)return;
+  e.notes=document.getElementById("editNotes").value.trim();
+  e.geneN=parseInt(document.getElementById("editGene").value);
+  persist(entries);renderJournal();closeModal();
+  showToast("✅ Entrée modifiée !");
+}
+
+function closeModal(){document.getElementById("modalOverlay").classList.remove("open");}
+
+// ══════════════════════════════════════════
+// PROFIL
+// ══════════════════════════════════════════
+function initProfil(){
+  const p=loadProfil();
+  if(p.prenom) document.getElementById("pPrenom").value=p.prenom;
+  if(p.nom) document.getElementById("pNom").value=p.nom;
+  if(p.age) document.getElementById("pAge").value=p.age;
+  if(p.sexe) document.getElementById("pSexe").value=p.sexe;
+  if(p.medecin) document.getElementById("pMedecin").value=p.medecin;
+  if(p.pathologies) document.getElementById("pPathologies").value=p.pathologies;
+  if(p.medicaments) document.getElementById("pMedicaments").value=p.medicaments;
+  updateProfilDisplay(p);
+}
+
+function updateProfilDisplay(p){
+  const nom=document.getElementById("profilNom");
+  const info=document.getElementById("profilInfo");
+  if(nom) nom.textContent=p.prenom&&p.nom?`${p.prenom} ${p.nom}`:p.prenom||"Mon Profil";
+  if(info) info.textContent=p.age&&p.sexe?`${p.age} ans • ${p.sexe}`:(p.age?`${p.age} ans`:p.sexe||"Complète ton profil");
+  if(p.age){
+    const age=parseInt(p.age);
+    const suggests=[];
+    if(age>60) suggests.push("👵 Après 60 ans, une fréquence >10/jour mérite attention");
+    if(age>50&&p.sexe==="Homme") suggests.push("🔍 Après 50 ans chez l'homme, penser au bilan prostatique");
+    if(age<18) suggests.push("👶 Chez l'enfant/ado, 4-7 mictions/jour est normal");
+    if(p.sexe==="Femme"&&age>45) suggests.push("🌸 La ménopause peut affecter la fréquence urinaire");
+    if(suggests.length){
+      document.getElementById("profilSuggest").style.display="block";
+      document.getElementById("profilSuggestContent").innerHTML=suggests.map(s=>`<div style="font-size:12px;color:#b9f6ca;margin-bottom:6px">${s}</div>`).join("");
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+// RÉGLAGES
+// ══════════════════════════════════════════
+function initReglages(){
+  const r=loadReglages();
+  if(r.hydra) document.getElementById("togHydra").classList.add("on");
+  if(r.journal) document.getElementById("togJournal").classList.add("on");
+  if(r.freqHydra) document.getElementById("freqHydra").value=r.freqHydra;
+}
+
+function setTheme(name){
+  document.body.className="theme-"+name;
+  localStorage.setItem("jm_theme",name);
+  document.querySelectorAll(".theme-btn").forEach(b=>b.classList.remove("active"));
+  event.target.closest(".theme-btn").classList.add("active");
+}
+
+function setupHydraReminder(minutes){
+  if(hydraInterval) clearInterval(hydraInterval);
+  if("Notification" in window){
+    Notification.requestPermission().then(p=>{
+      if(p==="granted"){
+        hydraInterval=setInterval(()=>{
+          new Notification("💧 Vesya",{body:"N'oubliez pas de boire de l'eau !",icon:"💧"});
+        },minutes*60*1000);
+      }
+    });
+  }
+}
+
+function clearAll(){
+  if(confirm("Effacer TOUTES les données ?")){
+    entries=[];persist(entries);updateHeader();
+    showToast("🗑️ Données effacées");
+  }
+}
+
+// ══════════════════════════════════════════
+// UTILITAIRES
+// ══════════════════════════════════════════
+function updateHeader(){
+  const tod=entries.filter(e=>new Date(e.date).toDateString()===new Date().toDateString()).length;
+  const g={};entries.forEach(e=>{const k=new Date(e.date).toDateString();if(!g[k])g[k]=0;g[k]++;});
+  const nb=Object.keys(g).length;
+  document.getElementById("hToday").textContent=tod;
+  document.getElementById("hTotal").textContent=entries.length;
+  document.getElementById("hMoy").textContent=nb>0?(entries.length/nb).toFixed(1):"—";
+}
+
+function updateClock(){
+  const el=document.getElementById("clockDisplay");
+  const de=document.getElementById("dateDisplay");
+  if(el)el.textContent=nowTime();
+  if(de)de.textContent=nowDate();
+}
+
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2500);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+const savedTheme=localStorage.getItem("jm_theme");
+if(savedTheme&&savedTheme!=="dark") document.body.className="theme-"+savedTheme;
+
+renderJournal();updateHeader();
+setInterval(()=>{if(curView==="add"&&timeMode==="auto")updateClock();},30000);
+setInterval(()=>{if(entries.length)persist(entries);},60000);
+window.addEventListener("beforeunload",()=>persist(entries));
+window.addEventListener("visibilitychange",()=>{if(document.hidden)persist(entries);});
+window.addEventListener("pagehide",()=>persist(entries));
+</script>
+</body>
+</html>
