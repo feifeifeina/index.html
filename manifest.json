@@ -1,17 +1,97 @@
 {
-  "background_color": "#7b4fd4",
-  "dir": "ltr",
-  "display": "standalone",
   "name": "Vesya",
-  "orientation": "portrait",
-  "scope": "/",
   "short_name": "Vesya",
-  "start_url": "https://feifeifeina.github.io/index.html/",
-  "theme_color": "#4fc3c8",
-  "id": "com.vesya.journal",
+  "description": "Vesya — Journal médical urinaire personnel. Suivez vos symptômes urinaires, votre hydratation et générez des rapports professionnels pour votre médecin.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#7B4FD4",
+  "theme_color": "#4FC3C8",
   "lang": "fr",
-  "categories": [
-    "health",
-    "medical"
-  ]
+  "dir": "ltr",
+  "categories": ["health", "medical"],
+  "icons": [
+    {
+      "src": "vesya_icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "vesya_icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "720x1612",
+      "type": "image/png",
+      "label": "Journal - Page principale",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "720x1612",
+      "type": "image/png",
+      "label": "Couleurs et aspect de l'urine",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshot3.png",
+      "sizes": "720x1612",
+      "type": "image/png",
+      "label": "Douleurs et contexte",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshot4.png",
+      "sizes": "720x1612",
+      "type": "image/png",
+      "label": "Profil utilisateur",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshot5.png",
+      "sizes": "720x1612",
+      "type": "image/png",
+      "label": "Réglages et thèmes",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ajouter une miction",
+      "short_name": "Ajouter",
+      "description": "Enregistrer une nouvelle miction",
+      "url": "/index.html#add",
+      "icons": [{ "src": "vesya_icon_192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Voir les stats",
+      "short_name": "Stats",
+      "description": "Voir les statistiques",
+      "url": "/index.html#stats",
+      "icons": [{ "src": "vesya_icon_192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Rapport médecin",
+      "short_name": "Médecin",
+      "description": "Générer le rapport médical",
+      "url": "/index.html#rapport",
+      "icons": [{ "src": "vesya_icon_192.png", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/index.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }

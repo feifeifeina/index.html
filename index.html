@@ -380,6 +380,7 @@ select option { background: #0d2137; }
   <div id="view-rapport" class="view">
     <div id="rapportContent"></div>
     <button class="btn-secondary" onclick="printRapport()">🖨️ Imprimer / Sauvegarder PDF</button>
+    <button class="btn-secondary" onclick="shareRapport()" id="btnShare" style="display:none">📤 Partager le rapport</button>
     <button class="btn-secondary" onclick="exportTxt()">📄 Exporter en texte</button>
   </div>
 
@@ -646,6 +647,7 @@ function delEntry(id){
   if(confirm("Supprimer cette entrée ?")){
     entries=entries.filter(e=>e.id!==id);
     persist(entries);renderJournal();updateHeader();
+if(navigator.share){const b=document.getElementById('btnShare');if(b)b.style.display='block';}
     showToast("🗑️ Entrée supprimée");
   }
 }
@@ -814,6 +816,17 @@ function printRapport(){
   </style></head><body>${content.outerHTML}</body></html>`);
   w.document.close();
   w.print();
+}
+
+function shareRapport(){
+  const profil=loadProfil();
+  const nom=profil.prenom?profil.prenom+" "+profil.nom:"Patient";
+  const text="Rapport Vesya — "+nom+"\nTotal mictions: "+entries.length+"\nGénéré le: "+new Date().toLocaleDateString("fr-FR");
+  if(navigator.share){
+    navigator.share({title:"Vesya — Rapport Médical",text:text}).then(()=>showToast("✅ Rapport partagé !")).catch(()=>showToast("Partage annulé"));
+  } else {
+    exportTxt();
+  }
 }
 
 function exportTxt(){
@@ -1185,6 +1198,7 @@ const savedTheme=localStorage.getItem("jm_theme");
 if(savedTheme&&savedTheme!=="dark") document.body.className="theme-"+savedTheme;
 
 renderJournal();updateHeader();
+if(navigator.share){const b=document.getElementById('btnShare');if(b)b.style.display='block';}
 setInterval(()=>{if(curView==="add"&&timeMode==="auto")updateClock();},30000);
 setInterval(()=>{if(entries.length)persist(entries);},60000);
 window.addEventListener("beforeunload",()=>persist(entries));
